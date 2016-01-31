@@ -1,4 +1,4 @@
-"exp_test"
+"EXPSYS"
 {
 	"base"		"base"
 	"title"		"Exp System Tester"
