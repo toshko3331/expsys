@@ -4,14 +4,14 @@
 util.AddNetworkString( "UpdateExp" )
 
 function InitializeTable()
-	if( sql.Query( "SELECT SteamID,EXP FROM experience" ) == false ) then
+	if( sql.Query( "SELECT SteamID,EXP,Level FROM experience" ) == false ) then
 		CreateEXPTable();
 	end
 	print( "Database successfully initialized!" )
 end
 
 function CreateEXPTable()
-	sql.Query( "CREATE TABLE experience( SteamID string UNIQUE, EXP int )" )
+	sql.Query( "CREATE TABLE experience( SteamID string UNIQUE, Level int, EXP int )" )
 	print("Table created!")
 end
 hook.Add( "Initialize", "Experience Table Initilization", InitializeTable )
@@ -31,16 +31,16 @@ function AddExp( ply, exp)
 	sql.Query( "UPDATE experience SET EXP = EXP + '"..exp.."' WHERE SteamID = '"..steamID.."'" )
 	UpdateClientExp(ply,sql.QueryValue("SELECT EXP FROM experience WHERE SteamID = '"..steamID.."'"))
         for k,v in pairs(player.GetAll()) do
-             ply:notification.AddLegacy( "You got "..exp.." XP", NOTIFY_GENERIC, 2 )
+        	ply:SendLua("GAMEMODE:AddNotify('You got XP!', NOTIFY_GENERIC, 5);")
         end
 end
 
-function SetExp( ply, exp)
+function SetExp(ply , exp)
 	local steamID = ply:SteamID()
 	sql.Query( "UPDATE experience SET EXP = '"..exp.."' WHERE SteamID = '"..steamID.."'" )
 	UpdateClientExp(ply,exp)
         for k,v in pairs(player.GetAll()) do
-            ply:notification.AddLegacy( "You got "..exp.." XP", NOTIFY_GENERIC, 2 )
+        	ply:SendLua("GAMEMODE:AddNotify('You got XP!', NOTIFY_GENERIC, 5);")
         end
 end
 
@@ -49,3 +49,17 @@ function UpdateClientExp(ply, exp)
 	net.WriteInt(exp,32)
 	net.Send(ply)
 end
+
+Level = {1,10,50,70,80}
+
+function Level(ply, exp)
+	local steamID = ply:SteamID()
+	for k,v in pairs(player.GetAll()) do
+		for k,v in pairs(Level) do
+			if Level[v] < Level[v-1]
+				if level[v] > Level[+1]
+					sql.Query( "UPDATE experience SET Level = '"..Level.."' WHERE SteamID = '"..steamID.."'" )   
+				end
+			end
+		end
+	end
