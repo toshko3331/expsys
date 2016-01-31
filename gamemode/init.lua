@@ -6,6 +6,8 @@ AddCSLuaFile( "expsys.lua" )
 include("shared.lua")
 include("expsys.lua")
 
+DeriveGamemode( "sandbox" )
+
 function GM:Initialize()
 	--Nothing
 end
