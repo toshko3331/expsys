@@ -1,6 +1,0 @@
-"Garrys-Mod-Experience-System-master"
-{
-	"base"		"base"
-	"title"		"Exp System Tester"
-	"menusystem"	"1"
-}
