@@ -1,4 +1,4 @@
-"exp_test"
+"Garrys-Mod-Experience-System"
 {
 	"base"		"base"
 	"title"		"Exp System Tester"
