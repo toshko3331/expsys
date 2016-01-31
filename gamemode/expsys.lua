@@ -30,7 +30,7 @@ function AddExp( ply, exp)
 	local steamID = ply:SteamID()
 	sql.Query( "UPDATE experience SET EXP = EXP + '"..exp.."' WHERE SteamID = '"..steamID.."'" )
 	UpdateClientExp(ply,sql.QueryValue("SELECT EXP FROM experience WHERE SteamID = '"..steamID.."'"))
-        for k,v in pairs(player.GetAll) do
+        for k,v in pairs(player.GetAll()) do
              ply:notification.AddLegacy( "You got "..exp.." XP", NOTIFY_GENERIC, 2 )
         end
 end
@@ -39,7 +39,7 @@ function SetExp( ply, exp)
 	local steamID = ply:SteamID()
 	sql.Query( "UPDATE experience SET EXP = '"..exp.."' WHERE SteamID = '"..steamID.."'" )
 	UpdateClientExp(ply,exp)
-        for k,v in pairs(player.GetAll) do
+        for k,v in pairs(player.GetAll()) do
             ply:notification.AddLegacy( "You got "..exp.." XP", NOTIFY_GENERIC, 2 )
         end
 end
