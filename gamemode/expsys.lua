@@ -31,8 +31,9 @@ function AddExp( ply, exp)
 	sql.Query( "UPDATE experience SET EXP = EXP + '"..exp.."' WHERE SteamID = '"..steamID.."'" )
 	UpdateClientExp(ply,sql.QueryValue("SELECT EXP FROM experience WHERE SteamID = '"..steamID.."'"))
         for k,v in pairs(player.GetAll()) do
-        	ply:SendLua("GAMEMODE:AddNotify('You got XP!', NOTIFY_GENERIC, 5);")
+        	ply:SendLua("notification.AddLegacy('You got XP!', NOTIFY_GENERIC, 5);")
         end
+	Level(ply, exp)
 end
 
 function SetExp(ply , exp)
@@ -40,8 +41,9 @@ function SetExp(ply , exp)
 	sql.Query( "UPDATE experience SET EXP = '"..exp.."' WHERE SteamID = '"..steamID.."'" )
 	UpdateClientExp(ply,exp)
         for k,v in pairs(player.GetAll()) do
-        	ply:SendLua("GAMEMODE:AddNotify('You got XP!', NOTIFY_GENERIC, 5);")
+        	ply:SendLua("notification.AddLegacy('You got XP!', NOTIFY_GENERIC, 5);")
         end
+	Level(ply, exp)
 end
 
 function UpdateClientExp(ply, exp)
@@ -50,16 +52,32 @@ function UpdateClientExp(ply, exp)
 	net.Send(ply)
 end
 
-Level = {1,10,50,70,80}
+Levels = {1,10,50,70,80,300,600,900,100000}
 
 function Level(ply, exp)
 	local steamID = ply:SteamID()
 	for k,v in pairs(player.GetAll()) do
-		for k,v in pairs(Level) do
-			if Level[v] < Level[v-1]
-				if level[v] > Level[+1]
-					sql.Query( "UPDATE experience SET Level = '"..Level.."' WHERE SteamID = '"..steamID.."'" )   
+		print("Running1")
+		for k,v in pairs(Levels) do
+				print("Running1")
+			if Levels[v] == 1 then
+					print("Levels = 1")
+				if exp < Levels[v+1] then
+					sql.Query( "UPDATE experience SET Level = '"..Levels.."' WHERE SteamID = '"..steamID.."'" )   
+					print(Levels[v])
+				end
+			if Levels[v] != 1 then
+				print("Levels != 1")
+				print(Levels[v])
+				print(Levels[v-1])
+				if exp < Levels[v-1] then
+					if exp > Levels[v+1] then
+						sql.Query( "UPDATE experience SET Level = '"..Levels.."' WHERE SteamID = '"..steamID.."'" )   
+						print(Levels[v])
+					end
 				end
 			end
 		end
 	end
+end
+end
