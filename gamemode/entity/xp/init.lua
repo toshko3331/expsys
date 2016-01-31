@@ -17,7 +17,7 @@ function ENT:Initialize()
 end
  
 function ENT:Use( activator, caller )
-    return
+    AddExp(activator, 20)
 end
  
 function ENT:Think()
