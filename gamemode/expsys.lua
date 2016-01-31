@@ -41,7 +41,6 @@ function SetExp(ply , exp)
 end
 
 function UpdateClientExp(ply, exp)
-	print(exp)
 	net.Start( "UpdateExp" )
 	net.WriteInt(exp,32)
 	net.Send(ply)
@@ -53,7 +52,6 @@ function UpdateClientLevel(ply, Level)
 	net.Start( "UpdateLevel" )
 	net.WriteInt(Level,32)
 	net.Send(ply)
-	ply:ChatPrint("Sent")
 end
 
 Levels = {1,10,50,70,80,300,600,900,100000}
@@ -64,18 +62,14 @@ function Level(ply, exp2)
 		for p,z in pairs(Levels) do
 			if Levels[p] == 1 then
 				if exp2 < Levels[p] then
-					ply:ChatPrint(ActualLevels[p])
 					UpdateClientLevel(ply, ActualLevels[p])
-					print("p:"..ActualLevels[p])
 				end
 			end
 			if Levels[p] != 1 then
 				if exp2 > Levels[p-1] then
 				print("Done")
 					if exp2 <= Levels[p] then   
-						ply:ChatPrint(ActualLevels[p])
 						UpdateClientLevel(ply, ActualLevels[p])
-						print("p:"..ActualLevels[p])
 					end
 				end
 			end
