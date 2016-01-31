@@ -6,6 +6,8 @@ AddCSLuaFile( "expsys.lua" )
 include("shared.lua")
 include("expsys.lua")
 
+DeriveGamemode( "sandbox" )
+
 function GM:Initialize()
 	--Nothing
 end
@@ -23,4 +25,12 @@ function ShityTimer()
 
 end
 concommand.Add("StartTimer",ShityTimer)
+
+function RemoveXP()
+	for k,v in pairs(player.GetAll()) do
+		SetExp(v,0)
+		print("RESET!")
+	end
+end
+concommand.Add("RemoveEXP", RemoveXP)
 
