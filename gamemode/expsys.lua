@@ -4,14 +4,14 @@
 util.AddNetworkString( "UpdateExp" )
 util.AddNetworkString( "UpdateLevel" )
 function InitializeTable()
-	if( sql.Query( "SELECT SteamID,EXP,Level FROM experience" ) == false ) then
+	if( sql.Query( "SELECT SteamID,EXP FROM experience" ) == false ) then
 		CreateEXPTable();
 	end
 	print( "Database successfully initialized!" )
 end
 
 function CreateEXPTable()
-	sql.Query( "CREATE TABLE experience( SteamID string UNIQUE, Level int, EXP int )" )
+	sql.Query( "CREATE TABLE experience( SteamID string UNIQUE, EXP int )" )
 	print("Table created!")
 end
 hook.Add( "Initialize", "Experience Table Initilization", InitializeTable )
@@ -43,6 +43,7 @@ function SetExp(ply , exp)
 end
 
 function UpdateClientExp(ply, exp)
+	print(exp)
 	net.Start( "UpdateExp" )
 	net.WriteInt(exp,32)
 	net.Send(ply)
@@ -63,17 +64,17 @@ function Level(ply, exp)
 		for x,z in pairs(Levels) do
 			if Levels[x] == 1 then
 				if exp < Levels[x] then
-					sql.Query( "UPDATE experience SET Level = '"..Levels[x].."' WHERE SteamID = '"..steamID.."'" ) 
 					ply:ChatPrint(ActualLevels[x])
 					UpdateClientLevel(ply, ActualLevels[x])
+					print("X:"..ActualLevels[x])
 				end
 			end
 			if Levels[x] != 1 then
 				if exp > Levels[x-1] then
-					if exp <= Levels[x] then
-						sql.Query( "UPDATE experience SET Level = '"..Levels[x].."' WHERE SteamID = '"..steamID.."'" )   
+					if exp <= Levels[x] then   
 						ply:ChatPrint(ActualLevels[x])
 						UpdateClientLevel(ply, ActualLevels[x])
+						print("X:"..ActualLevels[x])
 					end
 				end
 			end
