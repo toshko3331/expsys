@@ -6,6 +6,12 @@ function UpdateExp(len)
 end
 net.Receive("UpdateExp",UpdateExp)
 
+function UpdateLevel(len)
+	Level = net.ReadInt(32)
+	print("I have been updated! Level: "..Level)
+end
+net.Receive("UpdateLevel",UpdateLevel)
+
 function PrintExp()
 	print(experience)
 end
