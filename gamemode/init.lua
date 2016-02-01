@@ -64,3 +64,12 @@ hook.Add("PlayerLevelUp","Any Player Leveling Up",
 		print(ply:Nick().." has just leveled up to level "..GetLevel(ply).."!") 
 	end
 )
+
+hook.Add("PlayerDeath","Gain Some Levels For Killing A Player", 
+	function(victim,inflictor,attacker ) 
+
+		if ( attacker:IsPlayer() ) then
+			AddLevels(attacker,2)
+		end
+	end
+)

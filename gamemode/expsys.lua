@@ -16,7 +16,7 @@ function CreateXPTable()
 	sql.Query( "CREATE TABLE experience( SteamID string UNIQUE, XP int, Level int )" )
 	print("Table created!")
 end
-hook.Add( "Initialize", "Experience Table Initilization", InitializeXPTable )
+hook.Add( "Initialize", "Experience Table Initialization", InitializeXPTable )
 
 function InitializePlayerInfo( ply )
 	local steamID = ply:SteamID()
@@ -25,33 +25,42 @@ function InitializePlayerInfo( ply )
 			VALUES ( '"..steamID.."', 0, 1)" )
 	end
 	
-	UpdateClient(ply,sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'"),
+	UpdateClient(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),
 		tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
 end
 hook.Add( "PlayerInitialSpawn", "Initializing The Player Info", InitializePlayerInfo )
 
-function AddXP( ply, xp)
+function AddXP( ply, xp )
 	local steamID = ply:SteamID()
 	sql.Query( "UPDATE experience SET XP = XP + '"..xp.."' WHERE SteamID = '"..steamID.."'" )
-	UpdateLevel(ply,sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'") + xp)
-	UpdateClient(ply,sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'"),
+	UpdateLevelWithXP(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")) + xp)
+	UpdateClient(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),
 		tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
-	ply:SendLua("notification.AddLegacy('You got XP!', NOTIFY_GENERIC, 5);")
+	ply:SendLua("notification.AddLegacy('You got "..xp.." XP!', NOTIFY_GENERIC, 5);")
 end
 
-function SetXP(ply , xp)
+function SetXP( ply, xp )
 	local steamID = ply:SteamID()
 	sql.Query( "UPDATE experience SET XP = '"..xp.."' WHERE SteamID = '"..steamID.."'" )
-	ply:SendLua("notification.AddLegacy('You got XP!', NOTIFY_GENERIC, 5);")
-	UpdateLevel(ply,xp)
+	ply:SendLua("notification.AddLegacy('Your experience points have been set to "..xp.." XP!', NOTIFY_GENERIC, 5);")
+	UpdateLevelWithXP(ply,xp)
 	UpdateClient(ply, xp,
-		sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'"))
+		tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
 end
 
-function SetLevel(ply, level)
+function AddLevels( ply, levels )
+	local steamID = ply:SteamID()
+	sql.Query( "UPDATE experience SET Level = Level + '"..levels.."' WHERE SteamID = '"..steamID.."'" )
+	UpdateClient(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),
+		tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
+	ply:SendLua("notification.AddLegacy('You got "..levels.." levels!', NOTIFY_GENERIC, 5);")
+end
+
+function SetLevel( ply, level )
 	local steamID = ply:SteamID()
 	sql.Query("UPDATE experience SET Level = 1 WHERE SteamID = '"..steamID.."'")
-	UpdateClient(ply,sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'"),level) 
+	UpdateClient(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),level) 
+	ply:SendLua("notification.AddLegacy('Your level is set to "..level.."!', NOTIFY_GENERIC, 5);")
 end
 
 function GetLevel(ply)
@@ -62,7 +71,7 @@ function GetXP(ply)
 	return tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..ply:SteamID().."'"))
 end
 
-function UpdateLevel(ply,xp)
+function UpdateLevelWithXP( ply, xp )
 	local steamID = ply:SteamID()
 	while xp > XPTable[tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")) + 1] do
 		sql.Query( "UPDATE experience SET Level = Level + 1 WHERE SteamID = '"..steamID.."'" )
@@ -72,7 +81,7 @@ function UpdateLevel(ply,xp)
 	end
 end
 
-function UpdateClient(ply, xp, level)
+function UpdateClient( ply, xp, level )
 	net.Start( "UpdateXP" )
 	net.WriteInt(xp,32)
 	net.WriteInt(level,32)
