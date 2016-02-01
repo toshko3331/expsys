@@ -3,7 +3,7 @@
 --Make this into a static class through tables or some shit...
 --TODO:Handle edge case of having max xp and being max level.
 util.AddNetworkString( "UpdateXP" )
-local XPTable = {0,100,200,300,400,500,600,700,800,900,1000}
+local XPTable = {0,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500}
 
 function InitializeXPTable()
 	if( sql.Query( "SELECT SteamID,XP,Level FROM experience" ) == false ) then
@@ -68,7 +68,7 @@ function UpdateLevel(ply,xp)
 		sql.Query( "UPDATE experience SET Level = Level + 1 WHERE SteamID = '"..steamID.."'" )
 		sql.Query( "UPDATE experience SET XP = 0 WHERE SteamID = '"..steamID.."'")
 		xp = xp - XPTable[tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'"))]
-		--TODO:Run a hook from here when the person levels up.
+		hook.Call("PlayerLevelUp",GAMEMODE,ply)
 	end
 end
 

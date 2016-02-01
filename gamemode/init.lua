@@ -58,3 +58,9 @@ timer.Create("PrintHighestLevel", 30, 0, function()
 	print("The highest XP on the server is:"..highestXP)
 	print("The highest Level the server is:"..highestLevel)
 end )
+
+hook.Add("PlayerLevelUp","Any Player Leveling Up",
+	function(ply) 
+		print(ply:Nick().." has just leveled up to level "..GetLevel(ply).."!") 
+	end
+)
