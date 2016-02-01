@@ -54,12 +54,21 @@ function SetLevel(ply, level)
 	UpdateClient(ply,sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'"),level) 
 end
 
+function GetLevel(ply)
+	return tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..ply:SteamID().."'"))
+end
+
+function GetXP(ply)
+	return tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..ply:SteamID().."'"))
+end
+
 function UpdateLevel(ply,xp)
 	local steamID = ply:SteamID()
 	while xp > XPTable[tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")) + 1] do
 		sql.Query( "UPDATE experience SET Level = Level + 1 WHERE SteamID = '"..steamID.."'" )
 		sql.Query( "UPDATE experience SET XP = 0 WHERE SteamID = '"..steamID.."'")
 		xp = xp - XPTable[tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'"))]
+		--TODO:Run a hook from here when the person levels up.
 	end
 end
 

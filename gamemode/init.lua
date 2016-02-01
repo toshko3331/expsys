@@ -42,4 +42,19 @@ function ResetLevels()
 end
 concommand.Add("ResetLevels", ResetLevels)
 
-
+timer.Create("PrintHighestLevel", 30, 0, function() 
+	local highestXP = 0 
+	local highestLevel = 1
+	for k,v in pairs(player.GetAll()) do
+		local playerXP = GetXP(v)
+		local playerLevel = GetLevel(v)
+		if highestXP < playerXP then
+			highestXP = playerXP
+		end
+		if highestLevel < playerLevel then
+			highestLevel = playerLevel
+		end
+	end
+	print("The highest XP on the server is:"..highestXP)
+	print("The highest Level the server is:"..highestLevel)
+end )
