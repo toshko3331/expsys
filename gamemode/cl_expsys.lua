@@ -1,17 +1,16 @@
 --TODO: Make this into a class so no global variables and shit like that.
+--NOTE: If we want to make these variables into Vars, we have to make sure that UpdateXP is called after the player is loaded
+--		which is currently NOT happening so the entity will return and it won't work.
 experience = 0
-function UpdateExp(len)
+level = 1
+function UpdateXP(len)
+--TODO:Add some checks to see if is player(?)
 	experience = net.ReadInt(32)
-	print("I have been updated! Exp: "..experience)
+	level = net.ReadInt(32)
+	
+	print("I have been updated! \n XP: "..experience.."\n Level: "..level)
 end
-net.Receive("UpdateExp",UpdateExp)
-
-function UpdateLevel(len)
-	Level = net.ReadInt(32)
-	print("I have been updated! Level: "..Level)
-	test(Level)
-end
-net.Receive("UpdateLevel",UpdateLevel)
+net.Receive("UpdateXP",UpdateXP)
 
 function PrintExp()
 	print(experience)
@@ -19,7 +18,7 @@ end
 concommand.Add("print_exp",PrintExp)
 
 hook.Add( "HUDPaint", "HelloThere", function()
-	draw.DrawText( "Level: "..Level, "DermaLarge", ScrW() * 0.07 , ScrH() * 0.85, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER )
+	draw.DrawText( "Level: "..level, "DermaLarge", ScrW() * 0.07 , ScrH() * 0.85, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER )
 end )
 
 function test()
@@ -39,7 +38,7 @@ function test()
 			surface.SetTextColor(200,25,25,255)
 			surface.SetFont( "Default" )
 			surface.SetTextPos( tonumber(targetScreenpos.x), tonumber(targetScreenpos.y))
-			surface.DrawText("Player Level: ".. target:GetVar("Level", 0 ))
+			surface.DrawText("Player Level: ".. target:GetVar("level", 0 )) -- Broken except for self
 	end
 	end
 end

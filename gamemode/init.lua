@@ -18,8 +18,8 @@ function ShityTimer()
 	timer.Create( "SomeShityTimer", 1, 10,function() 
 
 		for k,v in pairs(player.GetAll()) do
-			AddExp(v,20)
-			print("Added 20 exp points to "..v:Nick())
+			AddXP(v,20)
+			print("Added 20 XP points to "..v:Nick())
 		end
 	end)
 
@@ -28,9 +28,18 @@ concommand.Add("StartTimer",ShityTimer)
 
 function RemoveXP()
 	for k,v in pairs(player.GetAll()) do
-		SetExp(v,0)
+		SetXP(v,0)
 		print("RESET!")
 	end
 end
-concommand.Add("RemoveEXP", RemoveXP)
+concommand.Add("RemoveXP", RemoveXP)
+
+function ResetLevels()
+	for k,v in pairs(player.GetAll()) do
+		SetLevel(v,1)
+		print("Level set to 1!")
+	end
+end
+concommand.Add("ResetLevels", ResetLevels)
+
 

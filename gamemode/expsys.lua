@@ -1,78 +1,71 @@
 --TODO: Names. I feel like each function could have more informative names.
 --Initializing the table.
 --Make this into a static class through tables or some shit...
-util.AddNetworkString( "UpdateExp" )
-util.AddNetworkString( "UpdateLevel" )
-function InitializeTable()
-	if( sql.Query( "SELECT SteamID,EXP FROM experience" ) == false ) then
-		CreateEXPTable();
+--TODO:Handle edge case of having max xp and being max level.
+util.AddNetworkString( "UpdateXP" )
+local XPTable = {0,100,200,300,400,500,600,700,800,900,1000}
+
+function InitializeXPTable()
+	if( sql.Query( "SELECT SteamID,XP,Level FROM experience" ) == false ) then
+		CreateXPTable();
 	end
 	print( "Database successfully initialized!" )
 end
 
-function CreateEXPTable()
-	sql.Query( "CREATE TABLE experience( SteamID string UNIQUE, EXP int )" )
+function CreateXPTable()
+	sql.Query( "CREATE TABLE experience( SteamID string UNIQUE, XP int, Level int )" )
 	print("Table created!")
 end
-hook.Add( "Initialize", "Experience Table Initilization", InitializeTable )
---Set up of player when they first join.
+hook.Add( "Initialize", "Experience Table Initilization", InitializeXPTable )
+
 function InitializePlayerInfo( ply )
 	local steamID = ply:SteamID()
 	if( sql.Query( "SELECT * FROM experience WHERE SteamID = '"..steamID.."'" ) == nil ) then
-		sql.Query("INSERT INTO experience ( SteamID, EXP ) \
-			VALUES ( '"..steamID.."', 0)" )
+		sql.Query("INSERT INTO experience ( SteamID, XP, Level ) \
+			VALUES ( '"..steamID.."', 0, 1)" )
 	end
-	UpdateClientExp(ply,sql.QueryValue("SELECT EXP FROM experience WHERE SteamID = '"..steamID.."'"))
+	
+	UpdateClient(ply,sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'"),
+		tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
 end
 hook.Add( "PlayerInitialSpawn", "Initializing The Player Info", InitializePlayerInfo )
 
-function AddExp( ply, exp)
+function AddXP( ply, xp)
 	local steamID = ply:SteamID()
-	sql.Query( "UPDATE experience SET EXP = EXP + '"..exp.."' WHERE SteamID = '"..steamID.."'" )
-	UpdateClientExp(ply,sql.QueryValue("SELECT EXP FROM experience WHERE SteamID = '"..steamID.."'"))
-       	ply:SendLua("notification.AddLegacy('You got XP!', NOTIFY_GENERIC, 5);")
+	sql.Query( "UPDATE experience SET XP = XP + '"..xp.."' WHERE SteamID = '"..steamID.."'" )
+	UpdateLevel(ply,sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'") + xp)
+	UpdateClient(ply,sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'"),
+		tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
+	ply:SendLua("notification.AddLegacy('You got XP!', NOTIFY_GENERIC, 5);")
 end
 
-function SetExp(ply , exp)
+function SetXP(ply , xp)
 	local steamID = ply:SteamID()
-	sql.Query( "UPDATE experience SET EXP = '"..exp.."' WHERE SteamID = '"..steamID.."'" )
-	UpdateClientExp(ply,exp)
-       	ply:SendLua("notification.AddLegacy('You got XP!', NOTIFY_GENERIC, 5);")
+	sql.Query( "UPDATE experience SET XP = '"..xp.."' WHERE SteamID = '"..steamID.."'" )
+	ply:SendLua("notification.AddLegacy('You got XP!', NOTIFY_GENERIC, 5);")
+	UpdateLevel(ply,xp)
+	UpdateClient(ply, xp,
+		sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'"))
 end
 
-function UpdateClientExp(ply, exp)
-	net.Start( "UpdateExp" )
-	net.WriteInt(exp,32)
-	net.Send(ply)
-	exp2 = tonumber(exp,10)
-	Level(ply, exp2)
-end
-
-function UpdateClientLevel(ply, Level)
-	net.Start( "UpdateLevel" )
-	net.WriteInt(Level,32)
-	net.Send(ply)
-end
-
-Levels = {1,10,50,70,80,300,600,900,100000}
-ActualLevels = {1,2,3,4,5,6,7,8,9,10}
-function Level(ply, exp2)
+function SetLevel(ply, level)
 	local steamID = ply:SteamID()
-	for k,v in pairs(player.GetAll()) do
-		for p,z in pairs(Levels) do
-			if Levels[p] == 1 then
-				if exp2 < Levels[p] then
-					UpdateClientLevel(ply, ActualLevels[p])
-				end
-			end
-			if Levels[p] != 1 then
-				if exp2 > Levels[p-1] then
-				print("Done")
-					if exp2 <= Levels[p] then   
-						UpdateClientLevel(ply, ActualLevels[p])
-					end
-				end
-			end
-		end
+	sql.Query("UPDATE experience SET Level = 1 WHERE SteamID = '"..steamID.."'")
+	UpdateClient(ply,sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'"),level) 
+end
+
+function UpdateLevel(ply,xp)
+	local steamID = ply:SteamID()
+	while xp > XPTable[tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")) + 1] do
+		sql.Query( "UPDATE experience SET Level = Level + 1 WHERE SteamID = '"..steamID.."'" )
+		sql.Query( "UPDATE experience SET XP = 0 WHERE SteamID = '"..steamID.."'")
+		xp = xp - XPTable[tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'"))]
 	end
+end
+
+function UpdateClient(ply, xp, level)
+	net.Start( "UpdateXP" )
+	net.WriteInt(xp,32)
+	net.WriteInt(level,32)
+	net.Send(ply)
 end
