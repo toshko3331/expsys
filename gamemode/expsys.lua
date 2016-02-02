@@ -1,9 +1,11 @@
 --Initializing the table.																		   |
---Umm I think this is encapsulated? Not sure. Need to be double checked. I did my best for now.    |
---TODO: Names. I feel like each function could have more informative names.						   |
+--Umm I think this is encapsulated? Not sure. Need to be double checked. I did my best for now.  				   |
 --TODO:Handle edge case of having max xp and being max level.									   |																	   |
 ----------------------------------------------------------------------------------------------------
-
+print(==================================================)
+print(		Made by toshko3331 and DEADMONSTOR 	)
+print(	  GitHub:https://github.com/toshko3331/expsys   )
+print(==================================================)
 util.AddNetworkString( "UpdateXP" )
 
 XPSYS = {}
@@ -17,6 +19,7 @@ XPSYS.XPTable = {0,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,
 function XPSYS.InitializeXPTable()
 	if( sql.Query( "SELECT SteamID,XP,Level FROM experience" ) == false ) then
 		XPSYS.CreateXPTable();
+		EPSYS.MaxXP()
 	end
 	print( "Database successfully initialized!" )
 end
@@ -136,13 +139,27 @@ function XPSYS.UpdateLevelWithXP( ply, xp )
 		hook.Call("PlayerLevelUp",GAMEMODE,ply)
 	end
 end
+
 --[[---------------------------------------------------------
    Name: XPSYS.UpdateClient(player, xp, level)
    Desc: Sends the ammount over to the client
 -----------------------------------------------------------]]
+
 function XPSYS.UpdateClient( ply, xp, level )
 	net.Start( "UpdateXP" )
 	net.WriteInt(xp,32)
 	net.WriteInt(level,32)
 	net.Send(ply)
+end
+
+--[[---------------------------------------------------------
+   Name: XPSYS.MaxXP()
+   Desc: Checks for the max Level
+-----------------------------------------------------------]]
+
+function EPSYS.MaxXP()
+	local Level = 0
+	for k,v in pairs(EPSYS.XPTable) do
+		Level + 1
+	end
 end
