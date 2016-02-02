@@ -1,21 +1,33 @@
 --Initializing the table.																		   |
---Umm I think this is encapsulated? Not sure. Need to be double checked. I did my best for now.    |
---TODO: Names. I feel like each function could have more informative names.						   |
---TODO:Handle edge case of having max xp and being max level.									   |
---TODO:Document everything.																		   |
+--Umm I think this is encapsulated? Not sure. Need to be double checked. I did my best for now.  				   |
+--TODO:Handle edge case of having max xp and being max level.									   |																	   |
 ----------------------------------------------------------------------------------------------------
-
+print(==================================================)
+print(		Made by toshko3331 and DEADMONSTOR 	)
+print(	  GitHub:https://github.com/toshko3331/expsys   )
+print(==================================================)
 util.AddNetworkString( "UpdateXP" )
 
 XPSYS = {}
 XPSYS.XPTable = {0,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500}
 
+--[[---------------------------------------------------------
+   Name: XPSYS.InitializeXPTable()
+   Desc: Starts to make the Table if not there.
+-----------------------------------------------------------]]
+
 function XPSYS.InitializeXPTable()
 	if( sql.Query( "SELECT SteamID,XP,Level FROM experience" ) == false ) then
 		XPSYS.CreateXPTable();
+		EPSYS.MaxXP()
 	end
 	print( "Database successfully initialized!" )
 end
+
+--[[---------------------------------------------------------
+   Name: XPSYS.CreateXPTable()
+   Desc: This Creates the table if its not there.
+-----------------------------------------------------------]]
 
 function XPSYS.CreateXPTable()
 
@@ -23,6 +35,11 @@ function XPSYS.CreateXPTable()
 	print("Table created!")
 end
 hook.Add( "Initialize", "Experience Table Initialization", XPSYS.InitializeXPTable )
+
+--[[---------------------------------------------------------
+   Name: XPSYS.InitializePlayerInfo(player)
+   Desc: Makes the Players Row if not joined before.
+-----------------------------------------------------------]]
 
 function XPSYS.InitializePlayerInfo( ply )
 	local steamID = ply:SteamID()
@@ -37,6 +54,11 @@ function XPSYS.InitializePlayerInfo( ply )
 end
 hook.Add( "PlayerInitialSpawn", "Initializing The Player Info", XPSYS.InitializePlayerInfo )
 
+--[[---------------------------------------------------------
+   Name: XPSYS.AddXP(player, xp)
+   Desc: Adds XP to the player selected
+-----------------------------------------------------------]]
+
 function XPSYS.AddXP( ply, xp )
 	local steamID = ply:SteamID()
 	sql.Query( "UPDATE experience SET XP = XP + '"..xp.."' WHERE SteamID = '"..steamID.."'" )
@@ -45,6 +67,11 @@ function XPSYS.AddXP( ply, xp )
 		tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
 	ply:SendLua("notification.AddLegacy('You got "..xp.." XP!', NOTIFY_GENERIC, 5);")
 end
+
+--[[---------------------------------------------------------
+   Name: XPSYS.SetXP(player, xp)
+   Desc: Sets XP to the player selected
+-----------------------------------------------------------]]
 
 function XPSYS.SetXP( ply, xp )
 	local steamID = ply:SteamID()
@@ -55,6 +82,11 @@ function XPSYS.SetXP( ply, xp )
 		tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
 end
 
+--[[---------------------------------------------------------
+   Name: XPSYS.AddLevel(player, level(s))
+   Desc: Add(s) the level to the player selected
+-----------------------------------------------------------]]
+
 function XPSYS.AddLevels( ply, levels )
 	local steamID = ply:SteamID()
 	sql.Query( "UPDATE experience SET Level = Level + '"..levels.."' WHERE SteamID = '"..steamID.."'" )
@@ -63,6 +95,11 @@ function XPSYS.AddLevels( ply, levels )
 	ply:SendLua("notification.AddLegacy('You got "..levels.." levels!', NOTIFY_GENERIC, 5);")
 end
 
+--[[---------------------------------------------------------
+   Name: XPSYS.SetLevel(player, level(s))
+   Desc: Sets the level to the player selected
+-----------------------------------------------------------]]
+
 function XPSYS.SetLevel( ply, level )
 	local steamID = ply:SteamID()
 	sql.Query("UPDATE experience SET Level = 1 WHERE SteamID = '"..steamID.."'")
@@ -70,13 +107,28 @@ function XPSYS.SetLevel( ply, level )
 	ply:SendLua("notification.AddLegacy('Your level is set to "..level.."!', NOTIFY_GENERIC, 5);")
 end
 
+--[[---------------------------------------------------------
+   Name: XPSYS.GetLevel(player)
+   Desc: Returns the level that player has
+-----------------------------------------------------------]]
+
 function XPSYS.GetLevel(ply)
 	return tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..ply:SteamID().."'"))
 end
 
+--[[---------------------------------------------------------
+   Name: XPSYS.GetXP(player)
+   Desc: Returns the XP that player has
+-----------------------------------------------------------]]
+
 function XPSYS.GetXP(ply)
 	return tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..ply:SteamID().."'"))
 end
+
+--[[---------------------------------------------------------
+   Name: XPSYS.UpdateLevelWithXP(player, xp)
+   Desc: If goes over the ammount level up!
+-----------------------------------------------------------]]
 
 function XPSYS.UpdateLevelWithXP( ply, xp )
 	local steamID = ply:SteamID()
@@ -88,9 +140,26 @@ function XPSYS.UpdateLevelWithXP( ply, xp )
 	end
 end
 
+--[[---------------------------------------------------------
+   Name: XPSYS.UpdateClient(player, xp, level)
+   Desc: Sends the ammount over to the client
+-----------------------------------------------------------]]
+
 function XPSYS.UpdateClient( ply, xp, level )
 	net.Start( "UpdateXP" )
 	net.WriteInt(xp,32)
 	net.WriteInt(level,32)
 	net.Send(ply)
+end
+
+--[[---------------------------------------------------------
+   Name: XPSYS.MaxXP()
+   Desc: Checks for the max Level
+-----------------------------------------------------------]]
+
+function EPSYS.MaxXP()
+	local Level = 0
+	for k,v in pairs(EPSYS.XPTable) do
+		Level + 1
+	end
 end

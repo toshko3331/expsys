@@ -4,6 +4,12 @@
 XPSYS = {}
 XPSYS.experience = 0
 XPSYS.level = 1
+
+--[[---------------------------------------------------------
+   Name: XPSYS.UpdateXP()
+   Desc: Updates the level on the client
+-----------------------------------------------------------]]
+
 function XPSYS.UpdateXP(len)
 --TODO:Add some checks to see if is player(?)
 	XPSYS.experience = net.ReadInt(32)
@@ -13,16 +19,26 @@ function XPSYS.UpdateXP(len)
 end
 net.Receive("UpdateXP",XPSYS.UpdateXP)
 
-function XPSYS.PrintExp()
+--[[---------------------------------------------------------
+   Name: XPSYS.PrintXP()
+   Desc: Prints the your XP
+-----------------------------------------------------------]]
+
+function XPSYS.PrintXP()
 	print(XPSYS.experience)
 end
-concommand.Add("print_exp",XPSYS.PrintExp)
+concommand.Add("print_xp",XPSYS.PrintXP)
 
 hook.Add( "HUDPaint", "HelloThere", function()
 	draw.DrawText( "Level: "..XPSYS.level, "DermaLarge", ScrW() * 0.07 , ScrH() * 0.85, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER )
 end )
 
-function XPSYS.test()
+--[[---------------------------------------------------------
+   Name: XPSYS.HUDOverHead()
+   Desc: Hud thing thats being developed
+-----------------------------------------------------------]]
+
+function XPSYS.HUDOverHead()
 	local ply = LocalPlayer()
 	
 	for id,target in pairs(ents.FindByClass("Player")) do
