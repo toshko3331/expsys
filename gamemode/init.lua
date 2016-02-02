@@ -18,7 +18,7 @@ function ShityTimer()
 	timer.Create( "SomeShityTimer", 1, 10,function() 
 
 		for k,v in pairs(player.GetAll()) do
-			AddXP(v,20)
+			XPSYS.AddXP(v,20)
 			print("Added 20 XP points to "..v:Nick())
 		end
 	end)
@@ -28,15 +28,16 @@ concommand.Add("StartTimer",ShityTimer)
 
 function RemoveXP()
 	for k,v in pairs(player.GetAll()) do
-		SetXP(v,0)
+		XPSYS.SetXP(v,0)
 		print("RESET!")
 	end
+	
 end
 concommand.Add("RemoveXP", RemoveXP)
 
 function ResetLevels()
 	for k,v in pairs(player.GetAll()) do
-		SetLevel(v,1)
+		XPSYS.SetLevel(v,1)
 		print("Level set to 1!")
 	end
 end
@@ -46,8 +47,8 @@ timer.Create("PrintHighestLevel", 30, 0, function()
 	local highestXP = 0 
 	local highestLevel = 1
 	for k,v in pairs(player.GetAll()) do
-		local playerXP = GetXP(v)
-		local playerLevel = GetLevel(v)
+		local playerXP = XPSYS.GetXP(v)
+		local playerLevel = XPSYS.GetLevel(v)
 		if highestXP < playerXP then
 			highestXP = playerXP
 		end
@@ -61,7 +62,7 @@ end )
 
 hook.Add("PlayerLevelUp","Any Player Leveling Up",
 	function(ply) 
-		print(ply:Nick().." has just leveled up to level "..GetLevel(ply).."!") 
+		print(ply:Nick().." has just leveled up to level "..XPSYS.GetLevel(ply).."!") 
 	end
 )
 
@@ -69,7 +70,7 @@ hook.Add("PlayerDeath","Gain Some Levels For Killing A Player",
 	function(victim,inflictor,attacker ) 
 
 		if ( attacker:IsPlayer() ) then
-			AddLevels(attacker,2)
+			XPSYS.AddLevels(attacker,2)
 		end
 	end
 )
