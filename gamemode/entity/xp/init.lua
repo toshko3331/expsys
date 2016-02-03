@@ -17,7 +17,7 @@ function ENT:Initialize()
 end
  
 function ENT:Use( activator, caller )
-    AddExp(activator, 20)
+    XPSYS.AddXP(activator, 20)
 end
  
 function ENT:Think()
