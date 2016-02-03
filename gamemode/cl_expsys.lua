@@ -1,20 +1,23 @@
---TODO: Encapsulate all of this stuff.
---NOTE: If we want to make these variables into Vars, we have to make sure that UpdateXP is called after the player is loaded
---		which is currently NOT happening so the entity will return and it won't work.
+--TODO: Please for gods sake, find a graceful way to handle the maximum possible level. OR WAIT, should all that stuff be 
+--handled by the server? Actually this makes sense. So maybe just do nothing here because that is too much data to query and 
+--it also seems like boiler plate code. GG EZ.
 XPSYS = {}
-XPSYS.experience = 0
+XPSYS.XP = 0
 XPSYS.level = 1
+XPSYS.XPOfNextLevel = 1
+
 function XPSYS.UpdateXP(len)
 --TODO:Add some checks to see if is player(?)
-	XPSYS.experience = net.ReadInt(32)
+	XPSYS.XP = net.ReadInt(32)
 	XPSYS.level = net.ReadInt(32)
-	
-	print("I have been updated! \n XP: "..XPSYS.experience.."\n Level: "..XPSYS.level)
+	XPSYS.XPOfNextLevel = net.ReadInt(32)
+	print("I have been updated! \n XP: "..XPSYS.XP.."\n Level: "..XPSYS.level)
+	print("The next level's required XP is: "..XPSYS.XPOfNextLevel)
 end
 net.Receive("UpdateXP",XPSYS.UpdateXP)
 
 function XPSYS.PrintExp()
-	print(XPSYS.experience)
+	print(XPSYS.XP)
 end
 concommand.Add("print_exp",XPSYS.PrintExp)
 
@@ -39,8 +42,22 @@ function XPSYS.test()
 			surface.SetTextColor(200,25,25,255)
 			surface.SetFont( "Default" )
 			surface.SetTextPos( tonumber(targetScreenpos.x), tonumber(targetScreenpos.y))
-			surface.DrawText("Player Level: ".. target:GetVar("level", 1 ))-- Broken
+			surface.DrawText("Player Level: Test  ".. target:GetVar("level", 1 ))-- Broken
 	end
 	end
 end
-hook.Add( "HUDPaint", "DrawStuff", XPSYS.test)
+hook.Add( "HUDPaint", "DrawStuff", XPSYS.test )
+
+function XPSYS.XPBarDraw()
+		draw.RoundedBox( 7,  ScrW()/4, ScrH()/1.08, ScrW()/2, 20, Color(255,174,26,200) )
+		local ratio = XPSYS.XP / XPSYS.XPOfNextLevel
+		
+		if ratio <= 0.01 then
+			ratio = 0.01
+		end
+		draw.RoundedBoxEx( 5,ScrW()/4, ScrH()/1.08, (ScrW()/2) * ratio, 20, Color(26,107,255,255),true,false,true,false)
+		
+
+end
+
+hook.Add( "HUDPaint", "Experience Bar", XPSYS.XPBarDraw )

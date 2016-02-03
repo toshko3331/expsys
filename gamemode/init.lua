@@ -22,7 +22,7 @@ function ShityTimer()
 			print("Added 20 XP points to "..v:Nick())
 		end
 	end)
-
+	
 end
 concommand.Add("StartTimer",ShityTimer)
 
@@ -42,6 +42,15 @@ function ResetLevels()
 	end
 end
 concommand.Add("ResetLevels", ResetLevels)
+
+function SetXP(ply, cmd, args )
+	for k,v in pairs(player.GetAll()) do
+		XPSYS.SetXP(v,tonumber(args[1]))
+		print("XP set to "..args[1].."!")
+	end
+end
+concommand.Add("SetXP", SetXP)
+
 
 timer.Create("PrintHighestLevel", 30, 0, function() 
 	local highestXP = 0 

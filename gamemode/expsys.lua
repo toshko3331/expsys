@@ -8,8 +8,8 @@
 util.AddNetworkString( "UpdateXP" )
 
 XPSYS = {}
-XPSYS.XPTable = {0,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500}
-
+XPSYS.XPTable = {1,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500}
+ 
 function XPSYS.InitializeXPTable()
 	if( sql.Query( "SELECT SteamID,XP,Level FROM experience" ) == false ) then
 		XPSYS.CreateXPTable();
@@ -40,22 +40,24 @@ hook.Add( "PlayerInitialSpawn", "Initializing The Player Info", XPSYS.Initialize
 function XPSYS.AddXP( ply, xp )
 	local steamID = ply:SteamID()
 	sql.Query( "UPDATE experience SET XP = XP + '"..xp.."' WHERE SteamID = '"..steamID.."'" )
-	XPSYS.UpdateLevelWithXP(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")) + xp)
-	XPSYS.UpdateClient(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),
-		tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
+	XPSYS.UpdateLevelWithXP(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")))
+	--XPSYS.UpdateClient(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),
+	--	tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
 	ply:SendLua("notification.AddLegacy('You got "..xp.." XP!', NOTIFY_GENERIC, 5);")
 end
 
 function XPSYS.SetXP( ply, xp )
+	
 	local steamID = ply:SteamID()
 	sql.Query( "UPDATE experience SET XP = '"..xp.."' WHERE SteamID = '"..steamID.."'" )
-	ply:SendLua("notification.AddLegacy('Your experience points have been set to "..xp.." XP!', NOTIFY_GENERIC, 5);")
 	XPSYS.UpdateLevelWithXP(ply,xp)
-	XPSYS.UpdateClient(ply, xp,
-		tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
+	--XPSYS.UpdateClient(ply, tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),
+	--	tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
+	ply:SendLua("notification.AddLegacy('Your experience points have been set to "..xp.." XP!', NOTIFY_GENERIC, 5);")
 end
 
 function XPSYS.AddLevels( ply, levels )
+	-- TODO: Handle MAX level value.
 	local steamID = ply:SteamID()
 	sql.Query( "UPDATE experience SET Level = Level + '"..levels.."' WHERE SteamID = '"..steamID.."'" )
 	XPSYS.UpdateClient(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),
@@ -64,6 +66,7 @@ function XPSYS.AddLevels( ply, levels )
 end
 
 function XPSYS.SetLevel( ply, level )
+	-- TODO: Handle MAX level value.
 	local steamID = ply:SteamID()
 	sql.Query("UPDATE experience SET Level = 1 WHERE SteamID = '"..steamID.."'")
 	XPSYS.UpdateClient(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),level) 
@@ -79,18 +82,25 @@ function XPSYS.GetXP(ply)
 end
 
 function XPSYS.UpdateLevelWithXP( ply, xp )
+	--TODO: Handle MAX level value.
 	local steamID = ply:SteamID()
+		XPSYS.UpdateClient(ply,xp,tonumber(sql.QueryValue( "SELECT Level FROM experience WHERE SteamID = '"..steamID.."'" )))
 	while xp > XPSYS.XPTable[tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")) + 1] do
+		
 		sql.Query( "UPDATE experience SET Level = Level + 1 WHERE SteamID = '"..steamID.."'" )
-		sql.Query( "UPDATE experience SET XP = 0 WHERE SteamID = '"..steamID.."'")
 		xp = xp - XPSYS.XPTable[tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'"))]
+		sql.Query( "UPDATE experience SET XP = '"..xp.."' WHERE SteamID = '"..steamID.."'")
 		hook.Call("PlayerLevelUp",GAMEMODE,ply)
+		XPSYS.UpdateClient(ply,xp,tonumber(sql.QueryValue( "SELECT Level FROM experience WHERE SteamID = '"..steamID.."'" )))
 	end
 end
 
 function XPSYS.UpdateClient( ply, xp, level )
+	-- TODO: Handle MAX level value.
 	net.Start( "UpdateXP" )
 	net.WriteInt(xp,32)
 	net.WriteInt(level,32)
+	net.WriteInt(XPSYS.XPTable[tonumber(
+		sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..ply:SteamID().."'")) + 1] ,32) 
 	net.Send(ply)
 end
