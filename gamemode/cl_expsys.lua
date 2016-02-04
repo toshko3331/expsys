@@ -75,8 +75,12 @@ function XPSYS.XPBarDraw()
 		if ratio <= 0.01 then
 			ratio = 0.01
 		end
-		draw.RoundedBoxEx( 5,ScrW()/4, ScrH()/1.08, (ScrW()/2) * ratio, 20, Color(26,107,255,255),true,false,true,false)
 		
+		if ratio <= 0.98 then
+			draw.RoundedBoxEx( 5,ScrW()/4, ScrH()/1.08, (ScrW()/2) * ratio, 20, Color(26,107,255,255),true,false,true,false)
+		else
+			draw.RoundedBox( 5,ScrW()/4, ScrH()/1.08, (ScrW()/2) * ratio, 20, Color(26,107,255,255))
+		end
 
 end
 
