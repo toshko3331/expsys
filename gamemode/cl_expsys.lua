@@ -6,6 +6,11 @@ XPSYS.XP = 0
 XPSYS.level = 1
 XPSYS.XPOfNextLevel = 1
 
+--[[---------------------------------------------------------
+   Name: XPSYS.UpdateXP()
+   Desc: Updates the level on the client
+-----------------------------------------------------------]]
+
 function XPSYS.UpdateXP(len)
 --TODO:Add some checks to see if is player(?)
 	XPSYS.XP = net.ReadInt(32)
@@ -16,16 +21,26 @@ function XPSYS.UpdateXP(len)
 end
 net.Receive("UpdateXP",XPSYS.UpdateXP)
 
+--[[---------------------------------------------------------
+   Name: XPSYS.PrintXP()
+   Desc: Prints the your XP
+-----------------------------------------------------------]]
+
 function XPSYS.PrintExp()
 	print(XPSYS.XP)
 end
-concommand.Add("print_exp",XPSYS.PrintExp)
+concommand.Add("print_xp",XPSYS.PrintExp)
 
 hook.Add( "HUDPaint", "HelloThere", function()
 	draw.DrawText( "Level: "..XPSYS.level, "DermaLarge", ScrW() * 0.07 , ScrH() * 0.85, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER )
 end )
 
-function XPSYS.test()
+--[[---------------------------------------------------------
+   Name: XPSYS.HUDOverHead()
+   Desc: Hud thing thats being developed
+-----------------------------------------------------------]]
+
+function XPSYS.HUDOverHead()
 	local ply = LocalPlayer()
 	
 	for id,target in pairs(ents.FindByClass("Player")) do
@@ -46,7 +61,12 @@ function XPSYS.test()
 	end
 	end
 end
-hook.Add( "HUDPaint", "DrawStuff", XPSYS.test )
+hook.Add( "HUDPaint", "DrawStuff", XPSYS.HUDOverHead )
+
+--[[---------------------------------------------------------
+   Name: XPSYS.XPBarDraw()
+   Desc: Experience bar drawing function.
+-----------------------------------------------------------]]
 
 function XPSYS.XPBarDraw()
 		draw.RoundedBox( 7,  ScrW()/4, ScrH()/1.08, ScrW()/2, 20, Color(255,174,26,200) )
