@@ -49,8 +49,15 @@ Server-Side Hooks
 -----------------------------------------------------------]]
 
 --[[---------------------------------------------------------
-   Name: XPSYS.UpdateLevelWithXP(player, xp)
-   Desc: If goes over the ammount level up!
+   Name: XPSYS.UpdateThroughXP(player, xp)
+   Desc: Utility function for updating xp and level .
+			Meant for internal use only. Don't hook onto this without good reason.
+-----------------------------------------------------------]]
+
+--[[---------------------------------------------------------
+   Name: XPSYS.UpdateThroughLevel(player, xp)
+   Desc: Utility function for updating level.
+			Meant for internal use only. Don't hook onto this without good reason.
 -----------------------------------------------------------]]
 
 --[[---------------------------------------------------------

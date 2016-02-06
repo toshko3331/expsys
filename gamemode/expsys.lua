@@ -88,12 +88,9 @@ end
 -----------------------------------------------------------]]
 
 function XPSYS.AddLevels( ply, levels )
-	-- TODO: Handle MAX level value.
 	local steamID = ply:SteamID()
-	sql.Query( "UPDATE experience SET Level = Level + '"..levels.."' WHERE SteamID = '"..steamID.."'" )
-	XPSYS.UpdateClient(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),
-		tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")))
-	ply:SendLua("notification.AddLegacy('You got "..levels.." levels!', NOTIFY_GENERIC, 5);")
+	local newLevel = tonumber(sql.QueryValue("SELECT Level FROM experience WHERE SteamID = '"..steamID.."'")) + levels
+	XPSYS.UpdateThroughLevel( ply, newLevel )
 end
 
 --[[---------------------------------------------------------
@@ -102,12 +99,9 @@ end
 -----------------------------------------------------------]]
 
 function XPSYS.SetLevel( ply, level )
-	-- TODO: Handle MAX level value.
-	local steamID = ply:SteamID()
-	sql.Query("UPDATE experience SET Level = '"..level.."' WHERE SteamID = '"..steamID.."'")
-	XPSYS.UpdateClient(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),level) 
-	ply:SendLua("notification.AddLegacy('Your level is set to "..level.."!', NOTIFY_GENERIC, 5);")
+	XPSYS.UpdateThroughLevel( ply, level )
 end
+
 
 --[[---------------------------------------------------------
    Name: XPSYS.GetLevel(player)
@@ -145,8 +139,8 @@ end
 
 --[[---------------------------------------------------------
    Name: XPSYS.UpdateThroughXP(player, xp)
-   Desc: Updating the client data and also taking care of any leveling up if it occurs through XP gain,
-			keep in mind that all XP query assignment in the database should be done from the function that is calling this funcion. 
+   Desc: Utility function for updating the xp and taking into account any leveling up that happens in the process.
+			Not meant to be used outside of this file without good reason.
 -----------------------------------------------------------]]
 
 function XPSYS.UpdateThroughXP( ply, xp )
@@ -187,6 +181,26 @@ function XPSYS.UpdateThroughXP( ply, xp )
 end
 
 --[[---------------------------------------------------------
+   Name: XPSYS.UpdateThroughLevel(player, xp)
+   Desc: Utility function for updating level.
+			Not meant to be used outside of this file without good reason.
+-----------------------------------------------------------]]
+
+function XPSYS.UpdateThroughLevel( ply, level )
+	local steamID = ply:SteamID()
+	local maxLevel = #XPSYS.XPTable
+	if level >= maxLevel then
+		sql.Query("UPDATE experience SET Level = '"..maxLevel.."' WHERE SteamID = '"..steamID.."'")	
+		XPSYS.UpdateClient(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),maxLevel)
+		ply:SendLua("notification.AddLegacy('Your level is set to "..maxLevel.."!', NOTIFY_GENERIC, 5);")
+	else
+		sql.Query("UPDATE experience SET Level = '"..level.."' WHERE SteamID = '"..steamID.."'")
+		XPSYS.UpdateClient(ply,tonumber(sql.QueryValue("SELECT XP FROM experience WHERE SteamID = '"..steamID.."'")),level)
+		ply:SendLua("notification.AddLegacy('Your level is set to "..level.."!', NOTIFY_GENERIC, 5);")
+	end
+end
+
+--[[---------------------------------------------------------
    Name: XPSYS.UpdateClient(player, xp, level)
    Desc: Sends the ammount over to the client
 -----------------------------------------------------------]]
@@ -196,7 +210,7 @@ function XPSYS.UpdateClient( ply, xp, level )
 	net.Start( "UpdateXP" )
 	net.WriteInt(xp,32) -- client xp
 	net.WriteInt(level,32) -- client level
-	if XPSYS.isPlayerMaxLevel(ply) then --XP requirment for next level 
+	if XPSYS.isPlayerMaxLevel(ply) then --XP requirement for next level 
 		net.WriteInt(XPSYS.XPTable[#XPSYS.XPTable] ,32) 
 	else
 		net.WriteInt(XPSYS.XPTable[tonumber(

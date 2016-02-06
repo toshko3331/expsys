@@ -43,13 +43,29 @@ function ResetLevels()
 end
 concommand.Add("ResetLevels", ResetLevels)
 
-function SetXP(ply, cmd, args )
+function SetXP( ply, cmd, args )
 	for k,v in pairs(player.GetAll()) do
 		XPSYS.SetXP(v,tonumber(args[1]))
 		print("XP set to "..args[1].."!")
 	end
 end
 concommand.Add("SetXP", SetXP)
+
+function SetLevel( ply, cmd, args )
+	for k,v in pairs(player.GetAll()) do
+		XPSYS.SetLevel(v,tonumber(args[1]))
+		print("Level is set to "..args[1].."!")
+	end
+end
+concommand.Add("SetLevel", SetLevel)
+
+function AddLevels( ply, cmd, args )
+	for k,v in pairs(player.GetAll()) do
+		XPSYS.AddLevels(v,tonumber(args[1]))
+		print("Levels added are "..args[1].."!")
+	end
+end
+concommand.Add("AddLevels", AddLevels)
 
 
 timer.Create("PrintHighestLevel", 30, 0, function() 
