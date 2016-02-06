@@ -49,7 +49,7 @@ function XPSYS.HUDOverHead()
 		
 		local targetScreenpos = targetPos:ToScreen()
 		if targetDistance > 20 then end
-		if targetDistance =< 20 then
+		if targetDistance <= 20 then
 			surface.SetTextColor(200,25,25,255)
 			surface.SetFont( "Default" )
 			surface.SetTextPos( tonumber(targetScreenpos.x), tonumber(targetScreenpos.y))
