@@ -12,52 +12,8 @@ function XPSYS.Update(len)
 	XPSYS.XP = net.ReadInt(32)
 	XPSYS.level = net.ReadInt(32)
 	XPSYS.XPOfNextLevel = net.ReadInt(32)
-	print("I have been updated! \n XP: "..XPSYS.XP.."\n Level: "..XPSYS.level)
-	print("The next level's required XP is: "..XPSYS.XPOfNextLevel)
 end
 net.Receive("UpdateClient",XPSYS.Update)
-
---[[---------------------------------------------------------
-   Name: XPSYS.PrintXP()
-   Desc: Prints the your XP.
------------------------------------------------------------]]
-
-function XPSYS.PrintExp()
-	print(XPSYS.XP)
-end
-concommand.Add("print_xp",XPSYS.PrintExp)
-
-hook.Add( "HUDPaint", "HelloThere", function()
-	draw.DrawText( "Level: "..XPSYS.level, "DermaLarge", ScrW() * 0.07 , ScrH() * 0.85, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER )
-end )
-
---[[---------------------------------------------------------
-   Name: XPSYS.HUDOverHead()
-   Desc: HUD thing that is being developed
------------------------------------------------------------]]
-
-function XPSYS.HUDOverHead()
-	local ply = LocalPlayer()
-	
-	for id,target in pairs(ents.FindByClass("Player")) do
-		local name = tostring(target:Nick())
-		
-		local steamid = tostring(target:SteamID())
-		local targetPos = target:GetPos() + Vector(0,0,35)
-		
-		local targetDistance = math.floor((target:GetPos():Distance( targetPos ))/40)
-		
-		local targetScreenpos = targetPos:ToScreen()
-		if targetDistance > 20 then end
-		if targetDistance <= 20 then
-			surface.SetTextColor(200,25,25,255)
-			surface.SetFont( "Default" )
-			surface.SetTextPos( tonumber(targetScreenpos.x), tonumber(targetScreenpos.y))
-			surface.DrawText("Player Level: Test  ".. target:GetVar("level", 1 ))-- Broken
-		end
-	end
-end
-hook.Add( "HUDPaint", "DrawStuff", XPSYS.HUDOverHead )
 
 --[[---------------------------------------------------------
    Name: XPSYS.XPBarDraw()
@@ -67,7 +23,7 @@ hook.Add( "HUDPaint", "DrawStuff", XPSYS.HUDOverHead )
 function XPSYS.XPBarDraw()
 		draw.RoundedBox( 7,  ScrW()/4, ScrH()/1.08, ScrW()/2, 20, Color(255,174,26,200) )
 		local ratio = XPSYS.XP / XPSYS.XPOfNextLevel
-		
+
 		if ratio <= 0.01 then
 			ratio = 0.01
 		end
@@ -81,3 +37,7 @@ function XPSYS.XPBarDraw()
 end
 
 hook.Add( "HUDPaint", "Experience Bar", XPSYS.XPBarDraw )
+
+hook.Add( "HUDPaint", "LevelDraw", function()
+	draw.DrawText( "Level: "..XPSYS.level, "DermaLarge", ScrW() * 0.07 , ScrH() * 0.85, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER )
+end )

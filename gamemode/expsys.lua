@@ -3,7 +3,7 @@
 			Made by toshko3331 and DEADMONSTOR 	
 		  GitHub:https://github.com/toshko3331/expsys   
 	==================================================
-]]
+]]--
 util.AddNetworkString( "UpdateClient" )
 XPSYS = {}
 XPSYS.XPTable = {1,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500}
