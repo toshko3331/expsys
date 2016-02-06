@@ -1,6 +1,0 @@
-"expsys"
-{
-	"base"		"base"
-	"title"		"Exp System Tester"
-	"menusystem"	"1"
-}
