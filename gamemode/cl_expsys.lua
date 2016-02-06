@@ -1,29 +1,25 @@
---TODO: Please for gods sake, find a graceful way to handle the maximum possible level. OR WAIT, should all that stuff be 
---handled by the server? Actually this makes sense. So maybe just do nothing here because that is too much data to query and 
---it also seems like boiler plate code. GG EZ.
 XPSYS = {}
 XPSYS.XP = 0
 XPSYS.level = 1
 XPSYS.XPOfNextLevel = 1
 
 --[[---------------------------------------------------------
-   Name: XPSYS.UpdateXP()
-   Desc: Updates the level on the client
+   Name: XPSYS.Update()
+   Desc: Updates all the data on the client.
 -----------------------------------------------------------]]
 
-function XPSYS.UpdateXP(len)
---TODO:Add some checks to see if is player(?)
+function XPSYS.Update(len)
 	XPSYS.XP = net.ReadInt(32)
 	XPSYS.level = net.ReadInt(32)
 	XPSYS.XPOfNextLevel = net.ReadInt(32)
 	print("I have been updated! \n XP: "..XPSYS.XP.."\n Level: "..XPSYS.level)
 	print("The next level's required XP is: "..XPSYS.XPOfNextLevel)
 end
-net.Receive("UpdateXP",XPSYS.UpdateXP)
+net.Receive("UpdateClient",XPSYS.Update)
 
 --[[---------------------------------------------------------
    Name: XPSYS.PrintXP()
-   Desc: Prints the your XP
+   Desc: Prints the your XP.
 -----------------------------------------------------------]]
 
 function XPSYS.PrintExp()
@@ -37,7 +33,7 @@ end )
 
 --[[---------------------------------------------------------
    Name: XPSYS.HUDOverHead()
-   Desc: Hud thing thats being developed
+   Desc: HUD thing that is being developed
 -----------------------------------------------------------]]
 
 function XPSYS.HUDOverHead()
@@ -53,12 +49,12 @@ function XPSYS.HUDOverHead()
 		
 		local targetScreenpos = targetPos:ToScreen()
 		if targetDistance > 20 then end
-		if targetDistance < 20 then
+		if targetDistance =< 20 then
 			surface.SetTextColor(200,25,25,255)
 			surface.SetFont( "Default" )
 			surface.SetTextPos( tonumber(targetScreenpos.x), tonumber(targetScreenpos.y))
 			surface.DrawText("Player Level: Test  ".. target:GetVar("level", 1 ))-- Broken
-	end
+		end
 	end
 end
 hook.Add( "HUDPaint", "DrawStuff", XPSYS.HUDOverHead )
