@@ -206,6 +206,7 @@ end
 -----------------------------------------------------------]]
 
 function XPSYS.UpdateClient( ply, xp, level )
+	ply:SetVar("level"..level)
 	net.Start( "UpdateClient" )
 	net.WriteInt(xp,32) -- client xp
 	net.WriteInt(level,32) -- client level
