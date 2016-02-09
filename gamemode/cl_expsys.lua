@@ -43,7 +43,7 @@ function XPSYS.HUDOverHead()
 		local name = tostring(target:Nick())
 		
 		local steamid = tostring(target:SteamID())
-		local targetPos = target:GetPos() + Vector(0,0,35)
+		local targetPos = target:GetPos() + Vector(0,0,75)
 		
 		local targetDistance = math.floor((target:GetPos():Distance( targetPos ))/40)
 		
@@ -53,7 +53,7 @@ function XPSYS.HUDOverHead()
 			surface.SetTextColor(200,25,25,255)
 			surface.SetFont( "Default" )
 			surface.SetTextPos( tonumber(targetScreenpos.x), tonumber(targetScreenpos.y))
-			surface.DrawText("Player Level: Test  ".. target:GetVar("level", 1 ))-- Broken
+			surface.DrawText("Player Level: ".. target:GetVar("level", 1 ))-- Broken -- Should work Now
 		end
 	end
 end
