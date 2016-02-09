@@ -1,6 +1,6 @@
 "expsys"
 {
 	"base"		"base"
-	"title"		"Exp System Tester"
+	"title"		"Base EXP System"
 	"menusystem"	"1"
 }
