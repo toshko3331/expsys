@@ -88,6 +88,11 @@ end )
 hook.Add("PlayerLevelUp","Any Player Leveling Up",
 	function(ply) 
 		print(ply:Nick().." has just leveled up to level "..XPSYS.GetLevel(ply).."!") 
+		PrecacheParticleSystem("bday_confetti")
+		local plypos = ply:GetPos()
+		local plyangle = ply:GetAngle()
+		ParticleEffect("bday_confetti", plypos, plyangle, nil )
+		ply:EmitSound("music/HL1_song25_REMIX3.mp3")
 	end
 )
 
