@@ -34,6 +34,7 @@ function XPSYS.InitializePlayerInfo( ply )
 	end
 	local steamID = ply:SteamID()
 	if( sql.Query( "SELECT * FROM experience WHERE SteamID = '"..steamID.."'" ) == nil ) then
+		PrintMessage( HUD_PRINTTALK, ply:Name().. "Has joined the server for the first time.")
 		sql.Query("INSERT INTO experience ( SteamID, XP, Level ) \
 			VALUES ( '"..steamID.."', 0, 1)" )
 	end
