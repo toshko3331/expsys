@@ -1,3 +1,3 @@
-function GM:PlayerSpawn()
-	--TODO:Init stuff
+function GM:PlayerSpawn(ply)
+	---TODO:Rewards
 end
