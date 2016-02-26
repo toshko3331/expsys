@@ -105,7 +105,7 @@ hook.Add("PlayerDeath","Gain Some Levels For Killing A Player",
 	function(victim,inflictor,attacker ) 
 
 		if ( attacker:IsPlayer() ) then
-			XPSYS.AddLevels(attacker,2)
+			XPSYS.AddXP(attacker,2)
 		end
 	end
 )
