@@ -14,7 +14,7 @@ XPSYS.XPTable = {1,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,
 -----------------------------------------------------------]]
 function XPSYS.InitializeXPTable()
 	if( sql.Query( "SELECT SteamID,XP,Level FROM experience" ) == false ) then
-		sql.Query( "CREATE TABLE experience( SteamID string UNIQUE, XP int, Level int )" )
+		sql.Query( "CREATE TABLE experience( SteamID TEXT UNIQUE, XP INTEGER, Level INTEGER )" )
 		print( "XP table successfully initialized!" )
 	end
 
