@@ -1,13 +1,26 @@
 --[[
 	==================================================
-			Made by toshko3331 and DEADMONSTOR 	
-		  GitHub:https://github.com/toshko3331/expsys   
+		Made by toshko3331 and DEADMONSTOR 	
+	    GitHub:https://github.com/toshko3331/expsys   
 	==================================================
 ]]
+
 util.AddNetworkString( "UpdateClient" )
 XPSYS = {}
-XPSYS.XPTable = {1,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500}
+XPSYS.XPTable = {1}
 
+ --[[---------------------------------------------------------
+   Name: XPSYS.CreateXPGuildLines()
+   Desc: Makes the XPTable GuildLines
+-----------------------------------------------------------]]
+function XPSYS.CreateXPGuildLines()
+	for i=1,99 do do
+		table.insert(XPSYS.XPTable, i * 10)
+	end
+end
+end
+hook.Add( "Initialize", "CreateXPGuildLines", XPSYS.CreateXPGuildLines )
+		
  --[[---------------------------------------------------------
    Name: XPSYS.InitializeXPTable()
    Desc: Starts to make the Table if not there.
@@ -34,6 +47,7 @@ function XPSYS.InitializePlayerInfo( ply )
 	end
 	local steamID = ply:SteamID()
 	if( sql.Query( "SELECT * FROM experience WHERE SteamID = '"..steamID.."'" ) == nil ) then
+		PrintMessage( HUD_PRINTTALK, ply:Name().. "Has joined the server for the first time.")
 		sql.Query("INSERT INTO experience ( SteamID, XP, Level ) \
 			VALUES ( '"..steamID.."', 0, 1)" )
 	end
@@ -206,6 +220,7 @@ end
 -----------------------------------------------------------]]
 
 function XPSYS.UpdateClient( ply, xp, level )
+	ply:SetVar("level"..level)
 	net.Start( "UpdateClient" )
 	net.WriteInt(xp,32) -- client xp
 	net.WriteInt(level,32) -- client level

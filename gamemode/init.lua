@@ -13,8 +13,8 @@ function GM:Initialize()
 end
 
 --Test Code
-function ShityTimer()
-
+function ShityTimer(ply)
+    if ply:IsSuperAdmin() or ply:IsAdmin() then
 	timer.Create( "SomeShityTimer", 1, 10,function() 
 
 		for k,v in pairs(player.GetAll()) do
@@ -22,48 +22,57 @@ function ShityTimer()
 			print("Added 20 XP points to "..v:Nick())
 		end
 	end)
-	
+    end
 end
 concommand.Add("StartTimer",ShityTimer)
 
-function RemoveXP()
+function RemoveXP(ply)
+    if ply:IsSuperAdmin() or ply:IsAdmin() then
 	for k,v in pairs(player.GetAll()) do
 		XPSYS.SetXP(v,0)
 		print("RESET!")
 	end
-	
+   end
 end
 concommand.Add("RemoveXP", RemoveXP)
 
-function ResetLevels()
+function ResetLevels(ply)
+     if ply:IsSuperAdmin() or ply:IsAdmin() then
 	for k,v in pairs(player.GetAll()) do
 		XPSYS.SetLevel(v,1)
 		print("Level set to 1!")
 	end
+     end
 end
 concommand.Add("ResetLevels", ResetLevels)
 
 function SetXP( ply, cmd, args )
+    if ply:IsSuperAdmin() or ply:IsAdmin() then	
 	for k,v in pairs(player.GetAll()) do
 		XPSYS.SetXP(v,tonumber(args[1]))
 		print("XP set to "..args[1].."!")
 	end
+    end
 end
 concommand.Add("SetXP", SetXP)
 
 function SetLevel( ply, cmd, args )
+    if ply:IsSuperAdmin() or ply:IsAdmin() then		
 	for k,v in pairs(player.GetAll()) do
 		XPSYS.SetLevel(v,tonumber(args[1]))
 		print("Level is set to "..args[1].."!")
 	end
+    end
 end
 concommand.Add("SetLevel", SetLevel)
 
 function AddLevels( ply, cmd, args )
+    if ply:IsSuperAdmin() or ply:IsAdmin() then		
 	for k,v in pairs(player.GetAll()) do
 		XPSYS.AddLevels(v,tonumber(args[1]))
 		print("Levels added are "..args[1].."!")
 	end
+    end
 end
 concommand.Add("AddLevels", AddLevels)
 
@@ -88,6 +97,7 @@ end )
 hook.Add("PlayerLevelUp","Any Player Leveling Up",
 	function(ply) 
 		print(ply:Nick().." has just leveled up to level "..XPSYS.GetLevel(ply).."!") 
+		LevelUpEffects(ply)
 	end
 )
 
@@ -95,7 +105,7 @@ hook.Add("PlayerDeath","Gain Some Levels For Killing A Player",
 	function(victim,inflictor,attacker ) 
 
 		if ( attacker:IsPlayer() ) then
-			XPSYS.AddLevels(attacker,2)
+			XPSYS.AddXP(attacker,2)
 		end
 	end
 )
